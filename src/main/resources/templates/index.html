@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>AI TODO App</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --completed-color: #888;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        button.add-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        button.add-btn:hover {
+            opacity: 0.9;
+        }
+
+        .todo-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+            font-size: 1.1rem;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: var(--completed-color);
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-toggle {
+            background-color: #e0e0e0;
+        }
+
+        .btn-toggle.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .btn-delete {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-delete:hover {
+            background-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI TODO App</h1>
+
+        <!-- TODO追加フォーム -->
+        <form th:action="@{/add}" th:object="${newTodo}" method="post" class="input-group">
+            <input type="text" th:field="*{title}" placeholder="新しいタスクを入力..." required>
+            <button type="submit" class="add-btn">追加</button>
+        </form>
+
+        <!-- TODO一覧表示 -->
+        <ul class="todo-list">
+            <li th:each="todo : ${todos}" class="todo-item">
+                <form th:action="@{/toggle/{id}(id=${todo.id})}" method="post">
+                    <button type="submit" 
+                            th:classappend="${todo.completed} ? 'completed' : ''" 
+                            class="btn-action btn-toggle">
+                        <span th:text="${todo.completed} ? '✓' : ' '"></span>
+                    </button>
+                </form>
+                
+                <span th:text="${todo.title}" 
+                      th:classappend="${todo.completed} ? 'completed' : ''" 
+                      class="todo-text">
+                </span>
+
+                <form th:action="@{/delete/{id}(id=${todo.id})}" method="post">
+                    <button type="submit" class="btn-action btn-delete">削除</button>
+                </form>
+            </li>
+        </ul>
+        
+        <p th:if="${#lists.isEmpty(todos)}" style="text-align: center; color: #888;">
+            タスクはありません。新しいタスクを追加しましょう！
+        </p>
+    </div>
+</body>
+</html>
