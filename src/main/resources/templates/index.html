@@ -37,10 +37,33 @@
             margin-bottom: 2rem;
         }
 
+        .todo-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
         .input-group {
             display: flex;
             gap: 10px;
-            margin-bottom: 2rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
         }
 
         input[type="text"] {
@@ -125,6 +148,24 @@
         .btn-delete:hover {
             background-color: #f5c6cb;
         }
+
+        .todo-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .todo-details {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+            white-space: pre-wrap;
+        }
+
+        .todo-details.completed {
+            color: #aaa;
+            text-decoration: line-through;
+        }
     </style>
 </head>
 <body>
@@ -132,9 +173,12 @@
         <h1>AI TODO App</h1>
 
         <!-- TODO追加フォーム -->
-        <form th:action="@{/add}" th:object="${newTodo}" method="post" class="input-group">
-            <input type="text" th:field="*{title}" placeholder="新しいタスクを入力..." required>
-            <button type="submit" class="add-btn">追加</button>
+        <form th:action="@{/add}" th:object="${newTodo}" method="post" class="todo-form">
+            <div class="input-group">
+                <input type="text" th:field="*{title}" placeholder="タスクのタイトル..." required>
+                <button type="submit" class="add-btn">追加</button>
+            </div>
+            <textarea th:field="*{description}" placeholder="詳細な内容を入力してください（ここをAIが要約します）" rows="3"></textarea>
         </form>
 
         <!-- TODO一覧表示 -->
@@ -148,10 +192,17 @@
                     </button>
                 </form>
                 
-                <span th:text="${todo.title}" 
-                      th:classappend="${todo.completed} ? 'completed' : ''" 
-                      class="todo-text">
-                </span>
+                <div class="todo-content">
+                    <span th:text="${todo.title}" 
+                          th:classappend="${todo.completed} ? 'completed' : ''" 
+                          class="todo-text">
+                    </span>
+                    <div th:if="${todo.description}" 
+                         th:text="${todo.description}" 
+                         th:classappend="${todo.completed} ? 'completed' : ''" 
+                         class="todo-details">
+                    </div>
+                </div>
 
                 <form th:action="@{/delete/{id}(id=${todo.id})}" method="post">
                     <button type="submit" class="btn-action btn-delete">削除</button>
