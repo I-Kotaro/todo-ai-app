@@ -17,7 +17,7 @@ public class TodoController {
     private final TodoService todoService;
 
     /**
-     * トップページを表示します。
+     * トップページを表示
      * @param model 画面に渡すデータ
      * @return テンプレート名
      */
@@ -29,7 +29,7 @@ public class TodoController {
     }
 
     /**
-     * TODOを追加します。
+     * TODOを追加
      * @param todo 追加するTODO
      * @return トップページへリダイレクト
      */
@@ -40,7 +40,7 @@ public class TodoController {
     }
 
     /**
-     * TODOの完了状態を切り替えます。
+     * TODOの完了状態を切り替え
      * @param id 切り替え対象のTODO ID
      * @return トップページへリダイレクト
      */
@@ -51,7 +51,18 @@ public class TodoController {
     }
 
     /**
-     * TODOを削除します。
+     * AIを使用してTODOを要約
+     * @param id 要約対象のTODO ID
+     * @return トップページへリダイレクト
+     */
+    @PostMapping("/summarize/{id}")
+    public String summarizeTodo(@PathVariable Long id) {
+        todoService.summarizeTodo(id);
+        return "redirect:/";
+    }
+
+    /**
+     * TODOを削除
      * @param id 削除対象のTODO ID
      * @return トップページへリダイレクト
      */
