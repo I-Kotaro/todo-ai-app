@@ -166,6 +166,29 @@
             color: #aaa;
             text-decoration: line-through;
         }
+
+        .todo-summary {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            background-color: #eef6ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .btn-ai {
+            background-color: #f0f0f0;
+            color: #555;
+            border: 1px solid #ccc;
+        }
+
+        .btn-ai:hover {
+            background-color: #e0e0e0;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -202,7 +225,17 @@
                          th:classappend="${todo.completed} ? 'completed' : ''" 
                          class="todo-details">
                     </div>
+                    <!-- AI要約の表示 -->
+                    <div th:if="${todo.summary}" 
+                         class="todo-summary">
+                         ✨ AI要約: <span th:text="${todo.summary}"></span>
+                    </div>
                 </div>
+
+                <!-- AI要約ボタン -->
+                <form th:if="${todo.description and not todo.completed}" th:action="@{/summarize/{id}(id=${todo.id})}" method="post">
+                    <button type="submit" class="btn-action btn-ai" title="AIで要約する">🪄 要約</button>
+                </form>
 
                 <form th:action="@{/delete/{id}(id=${todo.id})}" method="post">
                     <button type="submit" class="btn-action btn-delete">削除</button>
