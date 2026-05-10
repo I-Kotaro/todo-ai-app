@@ -3,193 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>AI TODO App</title>
-    <style>
-        :root {
-            --primary-color: #4a90e2;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --completed-color: #888;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            padding-top: 50px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 600px;
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-        }
-
-        .todo-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-family: inherit;
-            resize: vertical;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        textarea:focus {
-            border-color: var(--primary-color);
-        }
-
-        input[type="text"] {
-            flex-grow: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary-color);
-        }
-
-        button.add-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: opacity 0.3s;
-        }
-
-        button.add-btn:hover {
-            opacity: 0.9;
-        }
-
-        .todo-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            gap: 10px;
-        }
-
-        .todo-item:last-child {
-            border-bottom: none;
-        }
-
-        .todo-text {
-            flex-grow: 1;
-            font-size: 1.1rem;
-        }
-
-        .todo-text.completed {
-            text-decoration: line-through;
-            color: var(--completed-color);
-        }
-
-        .btn-action {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s;
-        }
-
-        .btn-toggle {
-            background-color: #e0e0e0;
-        }
-
-        .btn-toggle.completed {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .btn-delete {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .btn-delete:hover {
-            background-color: #f5c6cb;
-        }
-
-        .todo-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .todo-details {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 4px;
-            white-space: pre-wrap;
-        }
-
-        .todo-details.completed {
-            color: #aaa;
-            text-decoration: line-through;
-        }
-
-        .todo-summary {
-            font-size: 0.85rem;
-            color: var(--primary-color);
-            background-color: #eef6ff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-top: 6px;
-            display: inline-block;
-            font-weight: 500;
-        }
-
-        .btn-ai {
-            background-color: #f0f0f0;
-            color: #555;
-            border: 1px solid #ccc;
-        }
-
-        .btn-ai:hover {
-            background-color: #e0e0e0;
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="container">
@@ -208,25 +22,25 @@
         <ul class="todo-list">
             <li th:each="todo : ${todos}" class="todo-item">
                 <form th:action="@{/toggle/{id}(id=${todo.id})}" method="post">
-                    <button type="submit" 
-                            th:classappend="${todo.completed} ? 'completed' : ''" 
+                    <button type="submit"
+                            th:classappend="${todo.completed} ? 'completed' : ''"
                             class="btn-action btn-toggle">
                         <span th:text="${todo.completed} ? '✓' : ' '"></span>
                     </button>
                 </form>
-                
+
                 <div class="todo-content">
-                    <span th:text="${todo.title}" 
-                          th:classappend="${todo.completed} ? 'completed' : ''" 
+                    <span th:text="${todo.title}"
+                          th:classappend="${todo.completed} ? 'completed' : ''"
                           class="todo-text">
                     </span>
-                    <div th:if="${todo.description}" 
-                         th:text="${todo.description}" 
-                         th:classappend="${todo.completed} ? 'completed' : ''" 
+                    <div th:if="${todo.description}"
+                         th:text="${todo.description}"
+                         th:classappend="${todo.completed} ? 'completed' : ''"
                          class="todo-details">
                     </div>
                     <!-- AI要約の表示 -->
-                    <div th:if="${todo.summary}" 
+                    <div th:if="${todo.summary}"
                          class="todo-summary">
                          ✨ AI要約: <span th:text="${todo.summary}"></span>
                     </div>
@@ -242,7 +56,7 @@
                 </form>
             </li>
         </ul>
-        
+
         <p th:if="${#lists.isEmpty(todos)}" style="text-align: center; color: #888;">
             タスクはありません。新しいタスクを追加しましょう！
         </p>
