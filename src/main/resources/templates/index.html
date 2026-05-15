@@ -44,12 +44,37 @@
                          class="todo-summary">
                          ✨ AI要約: <span th:text="${todo.summary}"></span>
                     </div>
+
+                    <!-- サブタスク一覧の表示 -->
+                    <ul th:if="${not #lists.isEmpty(todo.subtasks)}" class="subtask-list">
+                        <li th:each="subtask : ${todo.subtasks}" class="subtask-item">
+                            <form th:action="@{/subtasks/{id}/toggle(id=${subtask.id})}" method="post">
+                                <button type="submit"
+                                        th:classappend="${subtask.completed} ? 'completed' : ''"
+                                        class="subtask-toggle">
+                                    <span th:text="${subtask.completed} ? '✓' : ' '"></span>
+                                </button>
+                            </form>
+                            <span th:text="${subtask.content}"
+                                  th:classappend="${subtask.completed} ? 'completed' : ''"
+                                  class="subtask-text">
+                            </span>
+                        </li>
+                    </ul>
                 </div>
 
-                <!-- AI要約ボタン -->
-                <form th:if="${todo.description and not todo.completed}" th:action="@{/summarize/{id}(id=${todo.id})}" method="post">
-                    <button type="submit" class="btn-action btn-ai" title="AIで要約する">🪄 要約</button>
-                </form>
+                <!-- AIアクションボタン群 -->
+                <div class="ai-actions">
+                    <!-- AI要約ボタン -->
+                    <form th:if="${todo.description and not todo.completed}" th:action="@{/summarize/{id}(id=${todo.id})}" method="post">
+                        <button type="submit" class="btn-action btn-ai" title="AIで要約する">🪄 要約</button>
+                    </form>
+                    
+                    <!-- サブタスク生成ボタン -->
+                    <form th:if="${not todo.completed}" th:action="@{/todos/{id}/generate-subtasks(id=${todo.id})}" method="post">
+                        <button type="submit" class="btn-action btn-ai" title="サブタスクを生成する">📋 分解</button>
+                    </form>
+                </div>
 
                 <form th:action="@{/delete/{id}(id=${todo.id})}" method="post">
                     <button type="submit" class="btn-action btn-delete">削除</button>

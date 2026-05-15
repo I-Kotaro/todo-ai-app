@@ -16,11 +16,59 @@ import java.util.List;
 public class TodoService {
 
     private final TodoRepository todoRepository;
+    private final SubtaskRepository subtaskRepository;
     private final ChatClient chatClient;
 
-    public TodoService(TodoRepository todoRepository, ChatClient.Builder chatClientBuilder) {
+    public TodoService(TodoRepository todoRepository, SubtaskRepository subtaskRepository, ChatClient.Builder chatClientBuilder) {
         this.todoRepository = todoRepository;
+        this.subtaskRepository = subtaskRepository;
         this.chatClient = chatClientBuilder.build();
+    }
+
+    /**
+     * AIを使用してTODOからサブタスク（チェックリスト）を自動生成
+     * 
+     * @param id 対象のTODO ID
+     */
+    @Transactional
+    public void generateSubtasks(Long id) {
+        todoRepository.findById(id).ifPresent(todo -> {
+            String context = "タスク名: " + todo.getTitle();
+            if (todo.getDescription() != null) {
+                context += "\n詳細: " + todo.getDescription();
+            }
+
+            String response = chatClient.prompt()
+                    .user("以下のタスクを完了するために必要な具体的なステップを3〜5個、箇条書きで教えてください。各行は「・」で始めてください。\n" + context)
+                    .call()
+                    .content();
+
+            // レスポンスをパースしてSubtaskとして保存
+            response.lines()
+                    .filter(line -> line.trim().startsWith("・"))
+                    .map(line -> line.replaceFirst("・", "").trim())
+                    .forEach(content -> {
+                        Subtask subtask = Subtask.builder()
+                                .content(content)
+                                .completed(false)
+                                .todo(todo)
+                                .build();
+                        subtaskRepository.save(subtask);
+                    });
+        });
+    }
+
+    /**
+     * サブタスクの完了状態を切り替え
+     * 
+     * @param id サブタスク ID
+     */
+    @Transactional
+    public void toggleSubtaskCompletion(Long id) {
+        subtaskRepository.findById(id).ifPresent(subtask -> {
+            subtask.setCompleted(!subtask.isCompleted());
+            subtaskRepository.save(subtask);
+        });
     }
 
     /**
