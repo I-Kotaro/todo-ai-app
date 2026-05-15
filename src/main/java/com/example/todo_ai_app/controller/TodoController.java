@@ -62,6 +62,28 @@ public class TodoController {
     }
 
     /**
+     * AIを使用してTODOのサブタスクを生成
+     * @param id 対象のTODO ID
+     * @return トップページへリダイレクト
+     */
+    @PostMapping("/todos/{id}/generate-subtasks")
+    public String generateSubtasks(@PathVariable Long id) {
+        todoService.generateSubtasks(id);
+        return "redirect:/";
+    }
+
+    /**
+     * サブタスクの完了状態を切り替え
+     * @param id サブタスク ID
+     * @return トップページへリダイレクト
+     */
+    @PostMapping("/subtasks/{id}/toggle")
+    public String toggleSubtask(@PathVariable Long id) {
+        todoService.toggleSubtaskCompletion(id);
+        return "redirect:/";
+    }
+
+    /**
      * TODOを削除
      * @param id 削除対象のTODO ID
      * @return トップページへリダイレクト

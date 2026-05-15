@@ -32,4 +32,10 @@ public class Todo {
 
     // TODOの完了状態を表示
     private boolean completed;
+
+    // TODOに紐づくサブタスクのリスト。TODO削除時に連動して削除
+    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    private java.util.List<Subtask> subtasks = new java.util.ArrayList<>();
 }
